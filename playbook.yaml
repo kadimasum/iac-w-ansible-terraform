@@ -1,0 +1,31 @@
+- hosts: all
+  become: true
+  tasks:
+
+    - name: test connectivity
+      ping:
+
+    - name: Update server
+      apt:
+        update_cache: true
+
+    - name: Install apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Copy index.html to remote server
+      copy:
+        src: ./files/index.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: "0644"
+      notify:
+        - Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
